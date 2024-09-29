@@ -1,0 +1,27 @@
+/* SearchBar.module.css */
+.searchWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchLabel {
+  font-size: 16px;
+  color: #333;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+
+  /* Adds a subtle shadow on focus */
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+}

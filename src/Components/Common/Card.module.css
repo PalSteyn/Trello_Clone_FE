@@ -1,0 +1,52 @@
+.card {
+  background-color: #f1f8ff;
+  border: 1px solid #d1e9ff;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardDetails h4,
+p {
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 4px;
+}
+
+.cardDetails {
+  margin-bottom: 35px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.delete {
+  background-color: #f94144;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.edit {
+  background-color: #6f9fd6;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.viewDetails {
+  background-color: #1949af;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-left: 5px;
+}

@@ -1,0 +1,58 @@
+.addTaskBtn {
+  width: 200px;
+  height: 35px;
+  background-color: #2979ff;
+  margin: 20px 0px 5px 20px;
+  text-align: center;
+  align-content: center;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.board {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.column {
+  background-color: #e6f0ff;
+  border: 1px solid #b3d1ff;
+  border-radius: 5px;
+  padding: 0px 10px;
+  width: 30%;
+  height: calc(100vh - 119px);
+  overflow-x: auto;
+}
+
+.column h5 {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* Board.module.css */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow */
+  margin: 20px;
+}
+
+.sortSelect {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+}

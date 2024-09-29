@@ -1,0 +1,92 @@
+/* Container for centering the login box */
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  height: calc(100vh - 60px);
+  background-color: #f5f5f5;
+  overflow-x: auto;
+}
+
+/* Main box for the login form */
+.loginBox {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 2px solid #2979ff;
+  border-radius: 8px;
+  padding: 20px 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 30%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* Title styling */
+.title {
+  color: #2979ff;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Input fields */
+.inputField {
+  width: 95%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Login button */
+.loginButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #2979ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Signup text and link */
+.signupText {
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.signupLink {
+  color: #2979ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signupLink:hover {
+  text-decoration: underline;
+}
+
+/* Google login button */
+.googleLoginButton {
+  align-self: center;
+  width: 50%;
+  padding: 12px;
+  color: white;
+  /* background-color: #2979ff; */
+  /* border: 1px solid #2979ff; */
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  /* margin-top: 15px; */
+  /* font-weight: 700; */
+}
+
+.googleText {
+  font-weight: 700;
+}

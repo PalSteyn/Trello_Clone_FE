@@ -1,0 +1,60 @@
+/* Basic styles for the navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #2979ff; /* Blue background */
+  height: 40px;
+}
+
+/* Left section (logo) */
+.navbarLeft {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo styles */
+.logo {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Right section (buttons) */
+.navbarRight {
+  display: flex;
+  gap: 10px;
+}
+
+/* Button styling */
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Login button specific style */
+.loginButton {
+  background-color: white;
+  color: #2979ff;
+  border: 1px solid #2979ff;
+}
+
+/* Signup button specific style */
+.signupButton {
+  background-color: transparent;
+  color: white;
+  border: none;
+}
+
+/* Add hover effects */
+.loginButton:hover {
+  background-color: #e3f2fd;
+}
+
+.signupButton:hover {
+  text-decoration: underline;
+}
