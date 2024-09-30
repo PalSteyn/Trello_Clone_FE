@@ -1,7 +1,7 @@
 // components/Board.jsx
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Card from "../Common/Card";
+import Card from "../Common/Card/Card";
 import styles from "./Board.module.css";
 import SearchBar from "../SearchBar/SearchBar";
 import TasksView from "../Task/TasksView";
@@ -11,6 +11,7 @@ import { getCookie } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { getTasksByUserId, updateTaskStatus } from "../../services/taskService";
+import Loader from "../Common/Loader/Loader";
 
 // const initialData = {
 //   todo: [
@@ -135,6 +136,7 @@ const Board = () => {
 
   const fetchTasks = async () => {
     try {
+      // setLoader(true);
       const res = await getTasksByUserId(userId);
       console.log("res", res, res?.data);
       const tasks = res?.data || [];
@@ -151,6 +153,8 @@ const Board = () => {
       }
     } catch (err) {
       console.error("error fetching tasks", err);
+    } finally {
+      // setLoader(false);
     }
   };
   const onDragEnd = async (result) => {
@@ -181,11 +185,14 @@ const Board = () => {
         [destination.droppableId]: destCol,
       });
 
+      // setLoader(true);
       const res = await updateTaskStatus(movedTask?.id, newStatus);
       console.log("res", res);
       await fetchTasks();
     } catch (err) {
       console.error("error fetching tasks", err);
+    } finally {
+      // setLoader(false);
     }
   };
 
@@ -260,6 +267,7 @@ const Board = () => {
             setEditTask(false);
             // fetchTasks();
           }}
+          setLoader={setLoader}
         />
       )}
       {addTask && (
@@ -269,9 +277,10 @@ const Board = () => {
             setAddTask(false);
             // fetchTasks();
           }}
+          setLoader={setLoader}
         />
       )}
-      {loader && <div>Loader...</div>}
+      {loader && <Loader />}
     </>
   );
 };

@@ -5,11 +5,13 @@ import styles from "./Login.module.css";
 import { login, googleLogin } from "../../services/authService";
 import { getCookie, setCookie } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
+import Loader from "../Common/Loader/Loader";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loader, setLoader] = useState(false);
 
   const token = getCookie("token");
 
@@ -37,13 +39,19 @@ const Login = () => {
     }
 
     try {
+      setLoader(true);
       const response = await login(email, password);
       setCookie("token", response.token);
-      alert("Login successfull");
-      navigate("/board");
+
+      setTimeout(() => {
+        alert("Login successfull");
+        navigate("/board");
+      }, [3000]);
     } catch (error) {
       console.error("Login failed", error);
       alert("Invalid Credentials / User Not Found");
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -58,16 +66,21 @@ const Login = () => {
     const token = credentialResponse.credential;
 
     try {
+      setLoader(true);
       const response = await googleLogin(token);
 
       console.log("token", response.token);
 
       setCookie("token", response.token);
-      alert("Login successfull");
-      navigate("/board");
+      setTimeout(() => {
+        alert("Login successfull");
+        navigate("/board");
+      }, [3000]);
     } catch (error) {
       console.error("Google login failed", error);
       alert("Invalid Credentials / User Not Found");
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -78,45 +91,48 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <h2 className={styles.title}>Login</h2>
-      <div className={styles.loginBox}>
-        <form className={styles.loginForm} onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            className={styles.inputField}
-            value={email} // Controlled component
-            onChange={(e) => setEmail(e.target.value)} // Update email state
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className={styles.inputField}
-            value={password} // Controlled component
-            onChange={(e) => setPassword(e.target.value)} // Update password state
-          />
-          <button type="submit" className={styles.loginButton}>
-            Login
-          </button>
-        </form>
-        <p className={styles.signupText}>
-          Don’t have an account?{" "}
-          <a
-            className={styles.signupLink}
-            onClick={() => navigate("/register")}
-          >
-            Signup
-          </a>
-        </p>
-        <div className={styles.googleLoginButton}>
-          <GoogleLogin
-            onSuccess={handleGoogleLoginSuccess}
-            onError={handleGoogleLoginFailure}
-          />
+    <>
+      <div className={styles.loginContainer}>
+        <h2 className={styles.title}>Login</h2>
+        <div className={styles.loginBox}>
+          <form className={styles.loginForm} onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              className={styles.inputField}
+              value={email} // Controlled component
+              onChange={(e) => setEmail(e.target.value)} // Update email state
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className={styles.inputField}
+              value={password} // Controlled component
+              onChange={(e) => setPassword(e.target.value)} // Update password state
+            />
+            <button type="submit" className={styles.loginButton}>
+              Login
+            </button>
+          </form>
+          <p className={styles.signupText}>
+            Don’t have an account?{" "}
+            <a
+              className={styles.signupLink}
+              onClick={() => navigate("/register")}
+            >
+              Signup
+            </a>
+          </p>
+          <div className={styles.googleLoginButton}>
+            <GoogleLogin
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginFailure}
+            />
+          </div>
         </div>
       </div>
-    </div>
+      {loader && <Loader />}
+    </>
   );
 };
 

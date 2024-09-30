@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import styles from "./TasksView.module.css";
 import { addTask } from "../../services/taskService";
 
-const AddTask = ({ onClose, fetchTasks }) => {
+const AddTask = ({ onClose, fetchTasks, setLoader }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -26,6 +26,7 @@ const AddTask = ({ onClose, fetchTasks }) => {
       };
 
       try {
+        setLoader(true);
         const res = await addTask(newTask);
         console.log("Task added successfully:", res);
         alert("Task Added!!");
@@ -35,6 +36,8 @@ const AddTask = ({ onClose, fetchTasks }) => {
         onClose();
       } catch (err) {
         console.error("Failed to add task:", err);
+      } finally {
+        setLoader(false);
       }
     } else {
       alert("Please fill in both title and description");

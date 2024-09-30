@@ -13,6 +13,7 @@ const EditTask = ({
   onSave,
   onClose,
   fetchTasks,
+  setLoader,
 }) => {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
@@ -23,6 +24,7 @@ const EditTask = ({
       const updatedTask = { title, description, taskdetails: "abc" };
 
       try {
+        setLoader(true);
         const res = await updateTask(task?.id, updatedTask);
 
         console.log("Task updated successfully:", res);
@@ -33,6 +35,8 @@ const EditTask = ({
         onClose();
       } catch (err) {
         console.error("Failed to update task:", err);
+      } finally {
+        setLoader(false);
       }
     } else {
       alert("Please fill in both title and description");
