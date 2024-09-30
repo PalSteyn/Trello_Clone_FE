@@ -8,20 +8,20 @@ const Card = ({
   setViewTask,
   setEditTask,
   setTask,
-  removeTask,
+  fetchTasks,
 }) => {
   const handleDelete = async () => {
     // fetch userId from cookies or local storage
-    let userId;
+    // let userId;
     const confirmation = window.confirm(
       "Are you sure you want to delete this task?"
     );
     if (!confirmation) return;
 
     try {
-      await deleteTask(userId, task.id);
-      removeTask(task.id);
+      await deleteTask(task.id);
       alert("Task deleted successfully.");
+      fetchTasks();
     } catch (error) {
       console.error("Error deleting task:", error);
       alert("Failed to delete task.");
@@ -32,7 +32,7 @@ const Card = ({
     <div className={styles.card} draggable="true">
       <h3>{task.title}</h3>
       <p>{task.description}</p>
-      <p>Created at: {task.date}</p>
+      <p>Created at: {new Date(task.createdAt).toLocaleString()}</p>
       <div className={styles.actions}>
         <button className={styles.delete} onClick={handleDelete}>
           Delete

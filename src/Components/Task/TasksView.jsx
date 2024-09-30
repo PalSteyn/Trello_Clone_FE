@@ -23,7 +23,8 @@ const TasksView = ({ task, onClose }) => {
           <strong>Description:</strong> {task.description}
         </p>
         <p>
-          <strong>Created at:</strong> {new Date(task.date).toLocaleString()}
+          <strong>Created at:</strong>{" "}
+          {new Date(task.createdAt).toLocaleString()}
         </p>
         <div className={styles.buttons}>
           <button className={styles.closeButton} onClick={onClose}>

@@ -7,67 +7,97 @@ import SearchBar from "../SearchBar/SearchBar";
 import TasksView from "../Task/TasksView";
 import EditTask from "../Task/EditTask";
 import AddTask from "../Task/AddTask";
+import { getCookie } from "../../utils/helper";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { getTasksByUserId, updateTaskStatus } from "../../services/taskService";
 
-const initialData = {
-  todo: [
-    {
-      id: "task-1",
-      title: "Task 1",
-      description: "Description 1",
-      date: "01/09/2021, 05:30:00",
-    },
-    {
-      id: "task-2",
-      title: "Task 2",
-      description: "Description 2",
-      date: "01/09/2023, 05:30:00",
-    },
-    {
-      id: "task-3",
-      title: "Task 3",
-      description: "Description 3",
-      date: "01/09/2024, 05:30:00",
-    },
-  ],
-  inProgress: [
-    {
-      id: "task-4",
-      title: "Task 4",
-      description: "Description 4",
-      date: "01/09/2024, 05:30:00",
-    },
-    {
-      id: "task-5",
-      title: "Task 5",
-      description: "Description 5",
-      date: "01/09/2020, 05:30:00",
-    },
-  ],
-  done: [
-    {
-      id: "task-6",
-      title: "Task 6",
-      description: "Description 6",
-      date: "01/09/2020, 05:30:00",
-    },
-  ],
-};
+// const initialData = {
+//   todo: [
+//     {
+//       id: "task-1",
+//       title: "Task 1",
+//       description: "Description 1",
+//       date: "01/09/2021, 05:30:00",
+//     },
+//     {
+//       id: "task-2",
+//       title: "Task 2",
+//       description: "Description 2",
+//       date: "01/09/2023, 05:30:00",
+//     },
+//     {
+//       id: "task-3",
+//       title: "Task 3",
+//       description: "Description 3",
+//       date: "01/09/2024, 05:30:00",
+//     },
+//   ],
+//   inProgress: [
+//     {
+//       id: "task-4",
+//       title: "Task 4",
+//       description: "Description 4",
+//       date: "01/09/2024, 05:30:00",
+//     },
+//     {
+//       id: "task-5",
+//       title: "Task 5",
+//       description: "Description 5",
+//       date: "01/09/2020, 05:30:00",
+//     },
+//   ],
+//   done: [
+//     {
+//       id: "task-6",
+//       title: "Task 6",
+//       description: "Description 6",
+//       date: "01/09/2020, 05:30:00",
+//     },
+//   ],
+// };
 
 const Board = () => {
-  const [tasks, setTasks] = useState(initialData);
-  const [filteredTasks, setFilteredTasks] = useState(initialData);
+  const navigate = useNavigate();
+  const [tasks, setTasks] = useState({
+    todo: [],
+    inProgress: [],
+    done: [],
+  });
+  const [filteredTasks, setFilteredTasks] = useState({
+    todo: [],
+    inProgress: [],
+    done: [],
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [viewTask, setViewTask] = useState(false);
   const [editTask, setEditTask] = useState(false);
   const [addTask, setAddTask] = useState(false);
   const [task, setTask] = useState();
+  const [userId, setUserId] = useState("");
+  const [loader, setLoader] = useState(false);
+
+  const token = getCookie("token");
 
   useEffect(() => {
-    // check if user loggedIn
-    // fetch tasks API call
-  });
+    if (token) {
+      // setLoggedIn(true);
+      // navigate("/board");
+      const decoded = jwtDecode(token);
+      const id = decoded.userId;
+      console.log("id", id);
+      setUserId(id);
+      fetchTasks();
+    } else {
+      navigate("/");
+    }
+  }, [token]);
+
   useEffect(() => {
+    if (!token) return;
+    console.log("tasks", tasks);
+
     const filterAndSortTasks = () => {
       const filteredAndSortedTasks = {};
       Object.keys(tasks).forEach((colId) => {
@@ -80,9 +110,13 @@ const Board = () => {
 
         // Sort tasks based on "recent" or "oldest"
         if (sortBy === "recent") {
-          filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+          filtered.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
         } else if (sortBy === "oldest") {
-          filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+          filtered.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
         }
 
         filteredAndSortedTasks[colId] = filtered;
@@ -91,26 +125,62 @@ const Board = () => {
     };
 
     filterAndSortTasks();
-  }, [searchQuery, sortBy, tasks]);
+  }, [searchQuery, sortBy, tasks, token]);
 
-  const onDragEnd = (result) => {
-    const { source, destination } = result;
+  const fetchTasks = async () => {
+    try {
+      const res = await getTasksByUserId(userId);
+      console.log("res", res, res?.data);
+      const tasks = res?.data || [];
+      if (tasks) {
+        const groupedTasks = {
+          todo: tasks?.filter((task) => task.status.toLowerCase() === "todo"),
+          inProgress: tasks?.filter(
+            (task) => task.status.toLowerCase() === "inprogress"
+          ),
+          done: tasks?.filter((task) => task.status.toLowerCase() === "done"),
+        };
+        setTasks(groupedTasks);
+        setFilteredTasks(groupedTasks);
+      }
+    } catch (err) {
+      console.error("error fetching tasks", err);
+    }
+  };
+  const onDragEnd = async (result) => {
+    try {
+      const { source, destination } = result;
 
-    // Dropped outside the list
-    if (!destination) return;
+      console.log("result in dragEnd", result);
 
-    const sourceCol = tasks[source.droppableId];
-    const destCol = tasks[destination.droppableId];
-    const [movedTask] = sourceCol.splice(source.index, 1);
-    destCol.splice(destination.index, 0, movedTask);
+      // Dropped outside the list
+      if (!destination) return;
 
-    setTasks({
-      ...tasks,
-      [source.droppableId]: sourceCol,
-      [destination.droppableId]: destCol,
-    });
+      const sourceCol = tasks[source.droppableId];
+      const destCol = tasks[destination.droppableId];
+      const [movedTask] = sourceCol.splice(source.index, 1);
+      destCol.splice(destination.index, 0, movedTask);
 
-    // update tasks API call
+      const newStatus = destination.droppableId.toLowerCase();
+      const updatedTask = {
+        ...movedTask,
+        status: newStatus,
+      };
+
+      console.log("Updated Task", updatedTask);
+
+      setTasks({
+        ...tasks,
+        [source.droppableId]: sourceCol,
+        [destination.droppableId]: destCol,
+      });
+
+      const res = await updateTaskStatus(movedTask?.id, newStatus);
+      console.log("res", res);
+      await fetchTasks();
+    } catch (err) {
+      console.error("error fetching tasks", err);
+    }
   };
 
   return (
@@ -143,10 +213,10 @@ const Board = () => {
                   {...provided.droppableProps}
                 >
                   <h5>{colId.toUpperCase()}</h5>
-                  {filteredTasks[colId].map((task, index) => (
+                  {filteredTasks[colId]?.map((task, index) => (
                     <Draggable
                       key={task.id}
-                      draggableId={task.id}
+                      draggableId={String(task.id)}
                       index={index}
                     >
                       {(provided) => (
@@ -161,6 +231,7 @@ const Board = () => {
                             setViewTask={setViewTask}
                             setEditTask={setEditTask}
                             setTask={setTask}
+                            fetchTasks={fetchTasks}
                           />
                         </div>
                       )}
@@ -175,8 +246,26 @@ const Board = () => {
       </DragDropContext>
 
       {viewTask && <TasksView task={task} onClose={() => setViewTask(false)} />}
-      {editTask && <EditTask task={task} onClose={() => setEditTask(false)} />}
-      {addTask && <AddTask onClose={() => setAddTask(false)} />}
+      {editTask && (
+        <EditTask
+          task={task}
+          fetchTasks={fetchTasks}
+          onClose={() => {
+            setEditTask(false);
+            // fetchTasks();
+          }}
+        />
+      )}
+      {addTask && (
+        <AddTask
+          fetchTasks={fetchTasks}
+          onClose={() => {
+            setAddTask(false);
+            // fetchTasks();
+          }}
+        />
+      )}
+      {loader && <div>Loader...</div>}
     </>
   );
 };

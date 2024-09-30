@@ -1,13 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Login.module.css"; // Importing CSS Module
+import { useNavigate } from "react-router-dom";
+import { signup } from "../../services/authService";
+import { getCookie } from "../../utils/helper";
 
 const Register = () => {
   // State for form fields
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const token = getCookie("token");
+
+  useEffect(() => {
+    if (token) {
+      // setLoggedIn(true);
+      navigate("/board");
+    } else {
+      navigate("/");
+    }
+  }, [token]);
 
   // Helper function to validate email
   const validateEmail = (email) => {
@@ -15,8 +30,20 @@ const Register = () => {
     return emailRegex.test(email);
   };
 
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      alert(
+        "Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
+      return false;
+    }
+    return true;
+  };
+
   // Function to handle form submission
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
     // Basic validations
@@ -25,8 +52,7 @@ const Register = () => {
       return;
     }
 
-    if (password.length < 6) {
-      alert("Password must be at least 6 characters long");
+    if (!validatePassword(password)) {
       return;
     }
 
@@ -35,16 +61,16 @@ const Register = () => {
       return;
     }
 
-    // If all validations pass
-    alert("Signup successful!");
-
-    // Here you can send the form data to your backend for further processing
-    console.log({
-      firstName,
-      lastName,
-      email,
-      password,
-    });
+    try {
+      const name = firstName + " " + lastName;
+      const response = await signup(name, email, password);
+      console.log("singup res", response);
+      alert("Signup succesfull");
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed", error);
+      alert("Sign Up Failed");
+    }
   };
 
   return (
@@ -98,7 +124,7 @@ const Register = () => {
         </form>
         <p className={styles.signupText}>
           Already have an account?{" "}
-          <a href="/login" className={styles.signupLink}>
+          <a className={styles.signupLink} onClick={() => navigate("/")}>
             Login
           </a>
         </p>

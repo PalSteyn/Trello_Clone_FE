@@ -3,23 +3,36 @@ import React, { useState } from "react";
 import styles from "./TasksView.module.css";
 import { addTask } from "../../services/taskService";
 
-const AddTask = ({ onClose }) => {
+const AddTask = ({ onClose, fetchTasks }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const handleAdd = async () => {
     // fetch userId from cookies
-    let userId;
 
+    if (!title || !description || description.length > 300) {
+      alert(
+        "Title,Description must not be empty, Deswcription must have less than 300 legth"
+      );
+      return;
+    }
     if (title && description) {
-      const time = new Date();
-      const newTask = { title, description, time };
+      // const time = new Date();
+      const newTask = {
+        title: title,
+        description: description,
+        taskdetails: "",
+        status: "todo",
+      };
 
       try {
-        const res = await addTask(userId, newTask);
+        const res = await addTask(newTask);
         console.log("Task added successfully:", res);
+        alert("Task Added!!");
         setTitle("");
         setDescription("");
+        await fetchTasks();
+        onClose();
       } catch (err) {
         console.error("Failed to add task:", err);
       }

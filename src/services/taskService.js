@@ -1,11 +1,22 @@
-const API_URL = process.env.REACT_APP_API_URL; // Global base URL for API
+import { getCookie } from "../utils/helper";
+import { jwtDecode } from "jwt-decode";
 
-const getTasksByUserId = async (userId) => {
+const token = getCookie("token") || ""; // Get token from cookie or localStorage
+const API_URL = process.env.REACT_APP_API_URL; // Global base URL for API
+let decoded, userId;
+if (token) {
+  decoded = jwtDecode(token);
+  userId = decoded.userId;
+}
+
+const getTasksByUserId = async () => {
   try {
+    console.log("userId in service", userId);
     const response = await fetch(`${API_URL}/tasks/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Include token in the Authorization header
       },
     });
 
@@ -21,12 +32,13 @@ const getTasksByUserId = async (userId) => {
   }
 };
 
-const addTask = async (userId, task) => {
+const addTask = async (task) => {
   try {
-    const response = await fetch(`${API_URL}/tasks/${userId}`, {
+    const response = await fetch(`${API_URL}/addTask`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Include token in the Authorization header
       },
       body: JSON.stringify(task),
     });
@@ -43,12 +55,15 @@ const addTask = async (userId, task) => {
   }
 };
 
-const updateTask = async (userId, taskId, task) => {
+const updateTask = async (taskId, task) => {
   try {
-    const response = await fetch(`${API_URL}/tasks/${userId}/${taskId}`, {
+    console.log("taskId in update service", taskId);
+    console.log("task in update service", task);
+    const response = await fetch(`${API_URL}/updatetask/${taskId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Include token in the Authorization header
       },
       body: JSON.stringify(task),
     });
@@ -65,12 +80,36 @@ const updateTask = async (userId, taskId, task) => {
   }
 };
 
-const deleteTask = async (userId, taskId) => {
+const updateTaskStatus = async (taskId, task) => {
   try {
-    const response = await fetch(`${API_URL}/tasks/${userId}/${taskId}`, {
+    const response = await fetch(`${API_URL}/updateTaskStatus/${taskId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Include token in the Authorization header
+      },
+      body: JSON.stringify({ status: task }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error updating task");
+    }
+
+    const updatedTask = await response.json();
+    return updatedTask;
+  } catch (error) {
+    console.error("Error updating task:", error);
+    throw error;
+  }
+};
+
+const deleteTask = async (taskId) => {
+  try {
+    const response = await fetch(`${API_URL}/deletetask/${taskId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Include token in the Authorization header
       },
     });
 
@@ -85,4 +124,4 @@ const deleteTask = async (userId, taskId) => {
   }
 };
 
-export { getTasksByUserId, addTask, updateTask, deleteTask };
+export { getTasksByUserId, addTask, updateTask, deleteTask, updateTaskStatus };

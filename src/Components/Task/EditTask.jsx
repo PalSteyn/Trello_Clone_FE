@@ -12,24 +12,25 @@ const EditTask = ({
   },
   onSave,
   onClose,
+  fetchTasks,
 }) => {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
 
-  const handleSave = async (taskId) => {
+  const handleSave = async () => {
     // fetch userId from cookies
-
-    let userId;
     if (title && description) {
-      const updatedTask = { ...task, title, description };
+      const updatedTask = { title, description, taskdetails: "abc" };
 
       try {
-        const res = await updateTask(userId, taskId, updatedTask);
+        const res = await updateTask(task?.id, updatedTask);
 
         console.log("Task updated successfully:", res);
 
         setTitle("");
         setDescription("");
+        await fetchTasks();
+        onClose();
       } catch (err) {
         console.error("Failed to update task:", err);
       }

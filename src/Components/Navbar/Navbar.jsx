@@ -3,14 +3,23 @@ import styles from "./Navbar.module.css";
 
 import calendarImg from "../../assets/images/calendarImg.png";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../../utils/helper";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
 
+  const token = getCookie("token");
+
   useEffect(() => {
-    // check user loggedIn status
-  });
+    if (token) {
+      setLoggedIn(true);
+      navigate("/board");
+    } else {
+      // navigate("/");
+    }
+  }, [token]);
+
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarLeft}>
@@ -28,8 +37,9 @@ const NavBar = () => {
           <button
             className={styles.loginButton}
             onClick={() => {
-              // navigate("/login");
-              // logout function
+              document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+              setLoggedIn(false);
+              navigate("/");
             }}
           >
             Logout
