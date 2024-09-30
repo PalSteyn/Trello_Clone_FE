@@ -3,13 +3,8 @@ import { jwtDecode } from "jwt-decode";
 
 const token = getCookie("token") || ""; // Get token from cookie or localStorage
 const API_URL = process.env.REACT_APP_API_URL; // Global base URL for API
-let decoded, userId;
-if (token) {
-  decoded = jwtDecode(token);
-  userId = decoded.userId;
-}
 
-const getTasksByUserId = async () => {
+const getTasksByUserId = async (userId) => {
   try {
     console.log("userId in service", userId);
     const response = await fetch(`${API_URL}/tasks/${userId}`, {
