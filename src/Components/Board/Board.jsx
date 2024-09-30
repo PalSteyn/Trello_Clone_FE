@@ -88,11 +88,17 @@ const Board = () => {
       const id = decoded.userId;
       console.log("id", id);
       setUserId(id);
-      fetchTasks();
+      // fetchTasks();
     } else {
       navigate("/");
     }
   }, [token]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchTasks();
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (!token) return;
