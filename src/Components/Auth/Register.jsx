@@ -20,7 +20,7 @@ const Register = () => {
       // setLoggedIn(true);
       navigate("/board");
     } else {
-      navigate("/");
+      // navigate("/");
     }
   }, [token]);
 
